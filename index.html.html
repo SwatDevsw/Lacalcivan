@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ivan's Professional Tax Evasion Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.8.0/lib/browser/math.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Base styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        #container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        #controls {
+            display: flex;
+            justify-content: space-between;
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #007BFF;
+            color: white;
+        }
+        #calculator input {
+            width: 80%;
+            padding: 10px;
+            font-size: 20px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+        #calculator button {
+            padding: 15px;
+            width: 100%;
+            font-size: 20px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        #result {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        #history {
+            margin-top: 30px;
+            border-top: 2px solid #ccc;
+            padding-top: 20px;
+        }
+        #history div {
+            margin-bottom: 10px;
+        }
+        canvas {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="title">Ivan's Professional Tax Evasion Calculator</div>
+        <div id="controls">
+            <button onclick="toggleMode()">Toggle Light/Dark Mode</button>
+            <button onclick="showTutorial()">Show Tutorial</button>
+            <button onclick="startMiniGame()">Start Mini Game</button>
+            <button onclick="generateJoke()">Generate Joke</button>
+            <button onclick="currencyConverter()">Currency Converter (MXN)</button>
+            <button onclick="startTimer()">Start Timer</button>
+            <button onclick="clearHistory()">Clear History</button>
+        </div>
+
+        <div id="calculator">
+            <input id="expression" type="text" placeholder="Enter your equation...">
+            <button onclick="calculate()">Calculate</button>
+            <div id="result"></div>
+        </div>
+
+        <div id="history">
+            <h4>Calculation History:</h4>
+        </div>
+
+        <canvas id="graph"></canvas>
+    </div>
+
+    <!-- Footer with credit text -->
+    <div style="text-align: center; font-size: 14px; color: #555; margin-top: 30px;">
+        Made by Maldos Company Holdings & Co
+    </div>
+
+    <script>
+        let isDarkMode = false;
+        function toggleMode() {
+            isDarkMode = !isDarkMode;
+            document.body.style.backgroundColor = isDarkMode ? '#333' : '#fff';
+            document.body.style.color = isDarkMode ? '#fff' : '#000';
+            document.getElementById("controls").style.backgroundColor = isDarkMode ? '#444' : '#f4f4f4';
+            document.getElementById("controls").style.color = isDarkMode ? '#fff' : '#000';
+            const buttons = document.querySelectorAll("#controls button");
+            buttons.forEach(button => {
+                button.style.backgroundColor = isDarkMode ? '#555' : '#ddd';
+                button.style.color = isDarkMode ? '#fff' : '#000';
+            });
+            const calcButtons = document.querySelectorAll("#calculator button");
+            calcButtons.forEach(button => {
+                button.style.backgroundColor = isDarkMode ? '#007BFF' : '#28a745';
+            });
+
+            // Update graph for dark mode
+            const graphCanvas = document.getElementById('graph');
+            graphCanvas.style.backgroundColor = isDarkMode ? '#222' : '#fff';
+        }
+
+        function calculate() {
+            const expression = document.getElementById('expression').value;
+            try {
+                const result = math.evaluate(expression);
+                document.getElementById('result').innerHTML = `Result: ${result}`;
+                addHistory(expression, result);
+                plotGraph(expression);
+            } catch (error) {
+                document.getElementById("result").innerHTML = "Error: Invalid expression.";
+            }
+        }
+
+        const historyElement = document.getElementById('history');
+        function addHistory(expression, result) {
+            const historyEntry = document.createElement("div");
+            historyEntry.textContent = `${expression} = ${result}`;
+            historyElement.prepend(historyEntry);
+        }
+
+        function clearHistory() {
+            historyElement.innerHTML = '<h4>Calculation History:</h4>';
+        }
+
+        function plotGraph(expression) {
+            const ctx = document.getElementById('graph').getContext('2d');
+            const xValues = [];
+            const yValues = [];
+            for (let x = -10; x <= 10; x += 0.1) {
+                xValues.push(x);
+                yValues.push(math.evaluate(expression.replace('x', x)));
+            }
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xValues,
+                    datasets: [{
+                        label: 'Graph of the equation',
+                        data: yValues,
+                        borderColor: 'rgb(255, 99, 132)',
+                        fill: false
+                    }]
+                }
+            });
+        }
+
+        function showTutorial() {
+            alert("Quick Tutorial:\n\n" +
+                  "1. Enter an equation to calculate.\n" +
+                  "2. Use 'x' for variables.\n" +
+                  "3. Use functions like sin(), cos(), tan(), log(), sqrt(), etc.\n" +
+                  "4. Use 'compound interest' for compound interest calculations.\n" +
+                  "5. Use 'loan repayment' for loan schedules.\n\nEnjoy!");
+        }
+
+        function startMiniGame() {
+            let randomNumber = Math.floor(Math.random() * 20) + 1;
+            let guess = prompt("Guess the number between 1 and 20 (Cancel to exit):");
+            if (guess === null) return;
+            while (parseInt(guess) !== randomNumber) {
+                guess = prompt("Try again! Guess the number between 1 and 20 (Cancel to exit):");
+                if (guess === null) return;
+            }
+            alert("Congratulations! You guessed the correct number.");
+        }
+
+        function generateJoke() {
+            const jokes = [
+                "Why don't skeletons fight each other? They don't have the guts!",
+                "I told my computer I needed a break, now it won't stop sending me KitKats.",
+                "Why did the math book look sad? Because it had too many problems.",
+                "¿Por qué los matemáticos son malos en el cine? Porque siempre se quejan de los 'problemas' en la trama.",
+                "¿Cómo se llama un león matemático? Un algebraico.",
+                "¿Por qué el libro de matemáticas estaba triste? Porque tenía demasiados problemas."
+            ];
+            alert(jokes[Math.floor(Math.random() * jokes.length)]);
+        }
+
+        function currencyConverter() {
+            const amount = prompt("Enter amount in USD to convert to MXN:");
+            const conversionRate = 18.25; // Example conversion rate (1 USD = 18.25 MXN)
+            alert(`$${amount} USD = $${(amount * conversionRate).toFixed(2)} MXN`);
+        }
+
+        function startTimer() {
+            const time = prompt("Enter the countdown time in seconds:");
+            let countdown = parseInt(time);
+            const timerInterval = setInterval(function() {
+                document.getElementById("result").innerHTML = `Time Left: ${countdown} seconds`;
+                countdown--;
+                if (countdown < 0) {
+                    clearInterval(timerInterval);
+                    alert("Time's up!");
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
